@@ -1,0 +1,61 @@
+{% include 'base.html' %}
+{% load core_extras %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Circulo Livraria - Fechamento de mês</title>
+</head>
+<body>
+{% block content %}
+{% endblock %}
+<div class="container-fluid">
+<h1>Fechamento</h1>
+<form action="{% url 'fechamento' %}" method="post">{% csrf_token %}
+{% if request.method == 'GET' %}
+    Selecione o mês: <input type="month" placeholder="Data" name="date"><br>
+    <div class="form-check">
+  <input class="form-check-input" type="radio" name="circulo" id="flexRadioDefault1">
+  <label class="form-check-label" for="flexRadioDefault1">
+    Circulo
+  </label>
+</div>
+<div class="form-check">
+  <input class="form-check-input" type="radio" name="athenas" id="flexRadioDefault2">
+  <label class="form-check-label" for="flexRadioDefault2">
+    Athenas
+  </label>
+</div>
+
+    <input type="submit" value="Fechar mês">
+{% endif %}
+    {% if request.method == 'POST' %}
+
+   <table id="notas" class="table .table-striped .table-bordered">
+  <thead>
+    <tr>
+      <th scope="col">Nota Fiscal</th>
+      <th scope="col">Emissão</th>
+      <th scope="col">Operação</th>
+      <th scope="col">Destinatário</th>
+      <th scope="col">CPF/CNPJ</th>
+      <th scope="col">Valor</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for item in query %}
+  <tr>
+      <td>{{ item.nf }}</td>
+      <td>{{ item.dtemissao.day }}/{{ item.dtemissao.month }}/{{ item.dtemissao.year }}</td>
+      <td>{{ item.natop }}</td>
+      <td>{{ item.cliforn | fornecedor }}</td>
+      <td>{{ item.cliforn | get_cgc }}</td>
+      <td>R$ {{ item.totprod | calcula_final:item.desconto }}0</td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+    {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% include 'base.html' %}
+{% load core_extras %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Circulo Livraria - Pedidos</title>
+</head>
+<body>
+{% block content %}
+{% endblock %}
+
+<table class="table table-bordered">
+<thead>
+    <tr>
+      <th scope="col">#Pedido</th>
+      <th scope="col">#Pedido Tray</th>
+      <th scope="col">Cliente</th>
+      <th scope="col">Plataforma</th>
+    </tr>
+  </thead>
+<tbody>
+{% for ped in peds %}
+<tr>
+
+<td>{{ ped.nped }}</td>
+<td>{{ ped.obs }}</td>
+<td>{{ ped.cliforn | fornecedor }}</td>
+<td>{{ ped.vendedor }}</td>
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</body>
+</html>

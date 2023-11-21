@@ -1,0 +1,49 @@
+{% include 'base.html' %}
+{% load core_extras %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Circulo - Itens Pendentes</title>
+</head>
+<body>
+{% block content %}
+{% endblock %}
+
+<div class="container-fluid">
+<table class="table table-bordered">
+<thead>
+    <tr>
+      <th scope="col">Codigo Interno</th>
+      <th scope="col">ISBN</th>
+      <th scope="col">Título</th>
+      <th scope="col">Quantidade</th>
+      <th scope="col">Valor Total</th>
+      <th scope="col">Pedido Marketplace</th>
+      <th scope="col">Plataforma</th>
+      <th scope="col">Estoque Circulo</th>
+      <th scope="col">Estoque Catavento</th>
+    </tr>
+  </thead>
+<tbody>
+{% for ped in peds %}
+<tr>
+
+<td>{{ ped.nped | get_nbook }}</td>
+<td>{{ ped.nped | get_nbook | get_isbn }}</td>
+<td>{{ ped.nped | get_nbook | get_titulo }}</td>
+<td>{{ ped.nped | get_qtd }}</td>
+<td>{{ ped.vlped | roundcash}}</td>
+<td>{{ ped.nped | get_pedmktplace }}</td>
+<td>{{ ped.nped | plataforma }}</td>
+<td>{{ ped.nped | get_nbook | checar_estoque }}</td>
+<td>{{ ped.nped | get_nbook | checar_catavento }}</td>
+
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
+    </div>
+</body>
+</html>

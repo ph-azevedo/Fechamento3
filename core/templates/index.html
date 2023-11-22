@@ -10,9 +10,9 @@
 
 {% endblock %}
 {% if auth == True %}
-<h1>Olá, {{ username }}!</h1>
+<div class="container-fluid"><h1>Olá, {{ username }}!</h1>
 
-
+</div>
 {% else %}
 <a href="{% url 'login' %}"><h3>Faça login</h3></a>
 {% endif %}

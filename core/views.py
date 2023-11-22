@@ -8,7 +8,6 @@ from django.contrib import messages
 import datetime
 from openpyxl import Workbook
 
-# Create your views here.
 
 def index(request):
     context = {}
@@ -98,24 +97,53 @@ def gera_lista(request):
         lista.save()
         lista_atual = Listas.objects.last()
         pedidos_pendentes = Ctrped.objects.filter(env='P', stsite=2).using('vlbooks').exclude(nped=9098).exclude(nped=11700).exclude(nped=13004).exclude(nped=12918)
+        dict_itens = {}
         for pedido in pedidos_pendentes:
             item = Orc.objects.filter(nped=pedido.nped).using('vlbooks')
             for i in item:
                 query = Livros.objects.filter(nbook=i.nbook).using('vlbooks').first()
                 query2 = Ctrped.objects.filter(nped=pedido.nped).using('vlbooks').first().vendedor
                 estoque = Estoque.objects.filter(nbook=i.nbook).using('vlbooks').first().disp
+                estoque_cat = Estoque.objects.filter(nbook=i.nbook).using('vlbooks').first().disp_ff
                 valor = Ctrped.objects.filter(nped=pedido.nped).using('vlbooks').first().vlped
                 context['valor'] = valor
-                if estoque >= i.qtde:
-                    itemped = AuxListas(isbn=query.isbn1, qtde=i.qtde, pedido=i.it_mktplace, lista_id=lista_atual.pk, local=query2, fornecedor='Circulo')
-                else:
-                    estoque_cat = Estoque.objects.filter(nbook=i.nbook).using('vlbooks').first().disp_ff
-                    if estoque_cat >= i.qtde:
-                        itemped = AuxListas(isbn=query.isbn1, qtde=i.qtde, pedido=i.it_mktplace,
-                                            lista_id=lista_atual.pk, local=query2, fornecedor='Catavento')
-                    else:
-                        itemped = AuxListas(isbn=query.isbn1, qtde=i.qtde, pedido=i.it_mktplace, lista_id=lista_atual.pk, local=query2)
+
+                itemped = AuxListas(isbn=query.isbn1, qtde=i.qtde, pedido=i.it_mktplace, lista_id=lista_atual.pk, local=query2)
+
+                # else:
+                #     estoque_cat = Estoque.objects.filter(nbook=i.nbook).using('vlbooks').first().disp_ff
+                #     if estoque_cat >= i.qtde:
+                #         itemped = AuxListas(isbn=query.isbn1, qtde=i.qtde, pedido=i.it_mktplace,
+                #                             lista_id=lista_atual.pk, local=query2, fornecedor='Catavento')
+                #     else:
+                #         itemped = AuxListas(isbn=query.isbn1, qtde=i.qtde, pedido=i.it_mktplace, lista_id=lista_atual.pk, local=query2)
                 itemped.save()
+            query = AuxListas.objects.filter(lista_id=lista_atual.pk).using('default')
+            dict_itens = {}
+            for item in query:
+                if item.isbn in dict_itens:
+                    dict_itens[item.isbn] = dict_itens[item.isbn] + item.qtde
+                else:
+                    dict_itens[item.isbn] = item.qtde
+        query_forn = AuxListas.objects.filter(lista_id=lista_atual.pk).using('default')
+        for i in query_forn:
+            nbook = Livros.objects.filter(isbn1=i.isbn).using('vlbooks').first().nbook
+            estoque_cat = Estoque.objects.filter(nbook=nbook).using('vlbooks').first().disp_ff
+            estoque = Estoque.objects.filter(nbook=nbook).using('vlbooks').first().disp
+            estoque_tt = estoque_cat + estoque
+            if int(dict_itens[i.isbn]) <= estoque:
+                i.fornecedor = 'Circulo'
+                i.save()
+
+            elif int(dict_itens[i.isbn]) > estoque:
+                if int(dict_itens[i.isbn]) <= estoque_cat:
+                    i.fornecedor = 'Catavento'
+                    i.save()
+
+                elif int(dict_itens[i.isbn]) > estoque_cat and int(dict_itens[i.isbn]) <= estoque_tt:
+                    i.fornecedor = 'Circulo e Catavento'
+                    i.save()
+            i.save()
         query = AuxListas.objects.filter(lista_id=lista_atual.pk).using('default')
         context['lista'] = lista_atual
         context['produtos'] = query

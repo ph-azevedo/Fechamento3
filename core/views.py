@@ -3,8 +3,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from core.models import Movfin, Nfiscal, Ctrped, Cliforn, Orc
+from core.models import Movfin, Nfiscal, Ctrped, Cliforn, Orc, Listas, AuxListas, Livros, Estoque
 from django.contrib import messages
+import datetime
+from openpyxl import Workbook
 
 # Create your views here.
 
@@ -77,3 +79,45 @@ def itens_pendentes(request):
     pedidos_pendentes = Ctrped.objects.filter(env='P', stsite=2).using('vlbooks').exclude(nped=9098).exclude(nped=11700).exclude(nped=13004).exclude(nped=12918)
     context['peds'] = pedidos_pendentes
     return render(request, 'pendentes.html', context)
+
+@login_required()
+def gera_lista(request):
+    context = {}
+    last = Listas.objects.last()
+
+    if request.method == 'GET':
+        context['lastdate'] = last.data
+        if last.data.day == datetime.datetime.now().day:
+            context['listahoje'] = True
+        else:
+            context['listahoje'] = False
+        return render(request, 'gera_listas.html', context)
+
+    elif request.method == "POST":
+        lista = Listas()
+        lista.save()
+        lista_atual = Listas.objects.last()
+        pedidos_pendentes = Ctrped.objects.filter(env='P', stsite=2).using('vlbooks').exclude(nped=9098).exclude(nped=11700).exclude(nped=13004).exclude(nped=12918)
+        for pedido in pedidos_pendentes:
+            item = Orc.objects.filter(nped=pedido.nped).using('vlbooks')
+            for i in item:
+                query = Livros.objects.filter(nbook=i.nbook).using('vlbooks').first()
+                query2 = Ctrped.objects.filter(nped=pedido.nped).using('vlbooks').first().vendedor
+                estoque = Estoque.objects.filter(nbook=i.nbook).using('vlbooks').first().disp
+                valor = Ctrped.objects.filter(nped=pedido.nped).using('vlbooks').first().vlped
+                context['valor'] = valor
+                if estoque >= i.qtde:
+                    itemped = AuxListas(isbn=query.isbn1, qtde=i.qtde, pedido=i.it_mktplace, lista_id=lista_atual.pk, local=query2, fornecedor='Circulo')
+                else:
+                    estoque_cat = Estoque.objects.filter(nbook=i.nbook).using('vlbooks').first().disp_ff
+                    if estoque_cat >= i.qtde:
+                        itemped = AuxListas(isbn=query.isbn1, qtde=i.qtde, pedido=i.it_mktplace,
+                                            lista_id=lista_atual.pk, local=query2, fornecedor='Catavento')
+                    else:
+                        itemped = AuxListas(isbn=query.isbn1, qtde=i.qtde, pedido=i.it_mktplace, lista_id=lista_atual.pk, local=query2)
+                itemped.save()
+        query = AuxListas.objects.filter(lista_id=lista_atual.pk).using('default')
+        context['lista'] = lista_atual
+        context['produtos'] = query
+
+        return render(request, 'gera_listas.html', context)

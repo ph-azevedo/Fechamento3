@@ -1,0 +1,62 @@
+{% include 'base.html' %}
+{% load core_extras %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Circulo - Gerar Lista</title>
+</head>
+<body>
+{% block content %}
+{% endblock %}
+<div class="container-fluid">
+    <h1>Gerar Lista</h1>
+
+    {% if request.method == "GET" %}
+    <p>A última lista foi gerada em {{ lastdate }}</p>
+    <br><p>Deseja gerar uma nova lista?</p>
+    <form method="post">
+    {% csrf_token %}
+
+    <div class="form-group">
+        <input type="submit" value="Gerar " class="btn btn-primary">
+    </div>
+</form>
+    {% else %}
+    <table class="table table-bordered">
+<thead>
+    <tr>
+      <th scope="col">ISBN</th>
+      <th scope="col">Fornecedor</th>
+      <th scope="col">Titulo</th>
+      <th scope="col">Quantidade</th>
+      <th scope="col">Valor Un</th>
+      <th scope="col">Valor Total</th>
+      <th scope="col">Pedido Marketplace</th>
+      <th scope="col">Plataforma</th>
+
+    </tr>
+  </thead>
+<tbody>
+{% for prod in produtos %}
+<tr>
+
+<td>{{ prod.isbn }}</td>
+<td>{{ prod.fornecedor }}</td>
+<td>{{ prod.isbn | get_titulo_isbn }}</td>
+<td>{{ prod.qtde }}</td>
+<td> {{ prod.isbn | get_valor }} </td>
+<td> {{ prod.isbn | get_valor | calcula_final:prod.qtde }} </td>
+<td>{{ prod.pedido }}</td>
+<td>{{ prod.local }}</td>
+
+
+
+</tr>
+{% endfor %}
+</tbody>
+</table>
+    {% endif %}
+</div>
+</body>
+</html>

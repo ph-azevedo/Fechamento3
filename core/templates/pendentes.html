@@ -33,7 +33,7 @@
 <td>{{ ped.nped | get_nbook | get_isbn }}</td>
 <td>{{ ped.nped | get_nbook | get_titulo }}</td>
 <td>{{ ped.nped | get_qtd }}</td>
-<td>{{ ped.vlped | roundcash}}</td>
+<td>R$ {{ ped.vlped | roundcash}}</td>
 <td>{{ ped.nped | get_pedmktplace }}</td>
 <td>{{ ped.nped | plataforma }}</td>
 <td>{{ ped.nped | get_nbook | checar_estoque }}</td>
@@ -44,6 +44,7 @@
 {% endfor %}
 </tbody>
 </table>
+    <br><p><a href="{% url 'lista' %}">Gerar lista</a></p>
     </div>
 </body>
 </html>

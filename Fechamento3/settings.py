@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'Fechamento3.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 LOGIN_URL = '/conta/login'
-DATABASE_ROUTERS = ["dbrouter.Router"]
+#DATABASE_ROUTERS = ["dbrouter.Router"]
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -118,9 +118,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 

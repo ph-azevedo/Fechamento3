@@ -19,7 +19,7 @@ def roundcash(arg1):
 
 @register.filter
 def calcula_final(arg1, arg2):
-    final = round(arg1 - arg2, 2)
+    final = round(arg1 * arg2, 2)
     return final
 
 @register.filter
@@ -59,7 +59,7 @@ def checar_estoque(arg1):
     return query
 @register.filter
 def checar_catavento(arg1):
-    query = Estoque.objects.filter(nbook=arg1).using('vlbooks').first().disp
+    query = Estoque.objects.filter(nbook=arg1).using('vlbooks').first().disp_ff
     return query
 
 @register.filter
@@ -71,3 +71,13 @@ def plataforma(arg1):
         return 'Site'
     else:
         return query
+
+@register.filter
+def get_titulo_isbn(arg1):
+    query = Livros.objects.filter(isbn1=arg1).using('vlbooks').first().title
+    return query
+
+@register.filter
+def get_valor(arg1):
+    query = Livros.objects.filter(isbn1=arg1).using('vlbooks').first().sellpr
+    return query

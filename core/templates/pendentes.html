@@ -59,7 +59,9 @@
 {% endfor %}
 </tbody>
 </table>
+    {% if user.is_superuser %}
     <br><p><a href="{% url 'lista' %}">Gerar lista</a></p>
+    {% endif %}
     </div>
 </body>
 </html>

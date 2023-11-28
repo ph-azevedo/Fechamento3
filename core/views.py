@@ -7,7 +7,7 @@ from core.models import Movfin, Nfiscal, Ctrped, Cliforn, Orc, Listas, AuxListas
 from django.contrib import messages
 import datetime
 from openpyxl import Workbook
-
+from core.templatetags.core_extras import get_pedmktplace
 
 def index(request):
     context = {}
@@ -103,20 +103,10 @@ def gera_lista(request):
             for i in item:
                 query = Livros.objects.filter(nbook=i.nbook).using('vlbooks').first()
                 query2 = Ctrped.objects.filter(nped=pedido.nped).using('vlbooks').first().vendedor
-                estoque = Estoque.objects.filter(nbook=i.nbook).using('vlbooks').first().disp
-                estoque_cat = Estoque.objects.filter(nbook=i.nbook).using('vlbooks').first().disp_ff
                 valor = Ctrped.objects.filter(nped=pedido.nped).using('vlbooks').first().vlped
                 context['valor'] = valor
 
-                itemped = AuxListas(isbn=query.isbn1, qtde=i.qtde, pedido=i.it_mktplace, lista_id=lista_atual.pk, local=query2)
-
-                # else:
-                #     estoque_cat = Estoque.objects.filter(nbook=i.nbook).using('vlbooks').first().disp_ff
-                #     if estoque_cat >= i.qtde:
-                #         itemped = AuxListas(isbn=query.isbn1, qtde=i.qtde, pedido=i.it_mktplace,
-                #                             lista_id=lista_atual.pk, local=query2, fornecedor='Catavento')
-                #     else:
-                #         itemped = AuxListas(isbn=query.isbn1, qtde=i.qtde, pedido=i.it_mktplace, lista_id=lista_atual.pk, local=query2)
+                itemped = AuxListas(isbn=query.isbn1, qtde=i.qtde, pedido=get_pedmktplace(pedido.nped), lista_id=lista_atual.pk, local=query2)
                 itemped.save()
             query = AuxListas.objects.filter(lista_id=lista_atual.pk).using('default')
             dict_itens = {}

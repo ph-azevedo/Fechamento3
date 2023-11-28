@@ -29,6 +29,21 @@
 {% for ped in peds %}
 <tr>
 
+
+   {% with a=ped.nped|get_nbook|checar_estoque b=ped.nped|get_nbook|checar_catavento %}
+    {% if a == 0 and b == 0%}
+
+    <td style="background-color: red">{{ ped.nped | get_nbook }}</td>
+<td style="background-color: red">{{ ped.nped | get_nbook | get_isbn }}</td>
+<td style="background-color: red">{{ ped.nped | get_nbook | get_titulo }}</td>
+<td style="background-color: red">{{ ped.nped | get_qtd }}</td>
+<td style="background-color: red">R$ {{ ped.vlped | roundcash}}</td>
+<td style="background-color: red">{{ ped.nped | get_pedmktplace }}</td>
+<td style="background-color: red">{{ ped.nped | plataforma }}</td>
+<td style="background-color: red">{{ ped.nped | get_nbook | checar_estoque }}</td>
+<td style="background-color: red">{{ ped.nped | get_nbook | checar_catavento }}</td>
+
+    {% else %}
 <td>{{ ped.nped | get_nbook }}</td>
 <td>{{ ped.nped | get_nbook | get_isbn }}</td>
 <td>{{ ped.nped | get_nbook | get_titulo }}</td>
@@ -38,8 +53,8 @@
 <td>{{ ped.nped | plataforma }}</td>
 <td>{{ ped.nped | get_nbook | checar_estoque }}</td>
 <td>{{ ped.nped | get_nbook | checar_catavento }}</td>
-
-
+    {% endif %}
+    {% endwith %}
 </tr>
 {% endfor %}
 </tbody>

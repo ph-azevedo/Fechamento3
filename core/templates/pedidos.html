@@ -26,9 +26,9 @@
 <tr>
 
 <td>{{ ped.nped }}</td>
-<td>{{ ped.obs }}</td>
+<td>{{ ped.nped | get_pedmktplace }}</td>
 <td>{{ ped.cliforn | fornecedor }}</td>
-<td>{{ ped.vendedor }}</td>
+<td>{{ ped.nped | plataforma }}</td>
 
 </tr>
 {% endfor %}

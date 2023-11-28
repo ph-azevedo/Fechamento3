@@ -1,5 +1,5 @@
 from django import template
-from core.models import Cliforn, Orc, Livros, Ctrped, Estoque
+from core.models import Cliforn, Orc, Livros, Ctrped, Estoque, Movfin
 register = template.Library()
 
 @register.filter
@@ -49,8 +49,11 @@ def get_isbn(arg1):
 
 @register.filter
 def get_pedmktplace(arg1):
-    query = Orc.objects.filter(nped=arg1).using('vlbooks')[0]
-    return query.it_mktplace
+    query = Ctrped.objects.filter(nped=arg1).using('vlbooks')[0]
+    obs = query.obs
+    if 'Código MktPlace:' in obs:
+        obs = obs.replace('Código MktPlace: ', '')
+    return obs
 
 
 @register.filter
@@ -69,6 +72,8 @@ def plataforma(arg1):
         return "Mercado Livre"
     elif query == "SITE_TRAY":
         return 'Site'
+    elif query == "MAGALU":
+        return 'Magazine Luiza'
     else:
         return query
 
@@ -81,3 +86,12 @@ def get_titulo_isbn(arg1):
 def get_valor(arg1):
     query = Livros.objects.filter(isbn1=arg1).using('vlbooks').first().sellpr
     return query
+
+@register.filter
+def plataforma_lista(arg1):
+    if arg1 == 'MELI':
+        return 'Mercado Livre'
+    elif arg1 == 'MAGALU':
+        return 'Magazine Luiza'
+    elif arg1 == 'SITE_TRAY':
+        return 'Site'

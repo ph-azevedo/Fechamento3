@@ -12,3 +12,7 @@ table, td, th {
     color: whitesmoke;
     font-family: Calibri;
 }
+
+.alert_td {
+    background-color: red;
+}
